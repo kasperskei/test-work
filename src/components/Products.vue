@@ -39,7 +39,12 @@ export default {
   font-size 1.5rem
   margin-bottom 1rem
 
+.product-group-list
+  column-width 500px
+
 .product-group-item
+  break-inside avoid
+
   &:not(:first-child)
     margin-top 1rem
 </style>

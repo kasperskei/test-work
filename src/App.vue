@@ -20,6 +20,10 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+#app
+  max-width 1100px
+  margin 0 auto
+
 .section
   padding 2rem
 </style>
