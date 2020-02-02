@@ -10,17 +10,27 @@ const state = reactive({
 
 const actions = {
   async init() {
-    state.rateUsdInRub = await api.getRateUsdInRub()
-    state.groupList = await api.getGroupList()
-    state.productList = (await api.getProductList()).map((product) => {
+    const [
+      rateUsdInRub,
+      groupList,
+      productList,
+    ] = await Promise.all([
+      api.getRateUsdInRub(),
+      api.getGroupList(),
+      api.getProductList(),
+    ])
+
+    api.rateUsdInRubObserver.subscribe((value) => {
+      state.rateUsdInRub = value
+    })
+
+    state.rateUsdInRub = rateUsdInRub
+    state.groupList = groupList
+    state.productList = productList.map((product) => {
       Object.defineProperty(product.price, 'RUB', {
         get() { return this.USD * state.rateUsdInRub },
       })
       return product
-    })
-
-    api.rateUsdInRubObserver.subscribe((value) => {
-      state.rateUsdInRub = value
     })
   },
 

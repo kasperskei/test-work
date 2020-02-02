@@ -17,8 +17,13 @@ export const getGroupList = async () => {
 }
 
 export const getProductList = async () => {
-  const { default: data } = await import('@/assets/data/data.json')
-  const { default: names } = await import('@/assets/data/names.json')
+  const [
+    { default: data },
+    { default: names },
+  ] = await Promise.all([
+    import('@/assets/data/data.json'),
+    import('@/assets/data/names.json'),
+  ])
 
   const productList = data.Value.Goods
     .map((product) => new Product({
