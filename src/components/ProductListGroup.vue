@@ -1,5 +1,5 @@
 <template lang="pug">
-details.product-group(
+details.product-list-group(
   open
 )
   summary.group-title {{ group.name }}
@@ -18,16 +18,16 @@ details.product-group(
 
         td.product-cell.product-price(
           v-watch:[onUpdatePrice]="product.price.RUB"
-        ) {{ currencyFormatter(product.price.RUB) }}
+        ) {{ formatCurrency(product.price.RUB) }}
 </template>
 
 <script>
-import { computed, toRefs } from 'vue'
-import memoizeIntl from '@/lib/memoizeIntl'
-import setNumberDiffClass from '@/lib/setNumberDiffClass'
+import { toRefs } from 'vue'
 import watch from '@/directives/watch'
 import Group from '@/models/Group'
 import store from '@/store'
+import useCurrency from '@/hooks/useCurrency'
+import useWatchDiff from '@/hooks/useWatchDiff'
 
 export default {
   directives: {
@@ -44,17 +44,16 @@ export default {
   setup({ group }) {
     const { cartProductMap } = toRefs(store.state)
     const { toggleCartProduct } = toRefs(store.actions)
+    const productList = store.getters.getProductListByGroupId(group.id)
 
-    const productList = computed(() => store.state.productList
-      .filter((product) => product.groupId === group.id))
-    const currencyFormatter = memoizeIntl(Intl.NumberFormat)('ru', { style: 'currency', currency: 'RUB' })
-    const onUpdatePrice = setNumberDiffClass()
+    const formatCurrency = useCurrency()
+    const onUpdatePrice = useWatchDiff()
 
     return {
-      productList,
       cartProductMap,
-      currencyFormatter,
+      productList,
       toggleCartProduct,
+      formatCurrency,
       onUpdatePrice,
     }
   },
@@ -62,7 +61,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.product-group
+.product-list-group
   user-select none
 
 .group-title

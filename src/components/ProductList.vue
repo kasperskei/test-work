@@ -1,13 +1,13 @@
 <template lang="pug">
-section.products
-  h2.products-title Продукты
+section.product-list
+  h2.product-title Продукты
 
   ul.product-group-list
     li.product-group-item(
       v-for="group in groupList"
       :key="group.id"
     )
-      ProductGroup(
+      ProductListGroup(
         :group="group"
       )
 </template>
@@ -15,17 +15,15 @@ section.products
 <script>
 import { toRefs } from 'vue'
 import store from '@/store'
-import ProductGroup from '@/components/ProductGroup.vue'
+import ProductListGroup from '@/components/ProductListGroup.vue'
 
 export default {
   components: {
-    ProductGroup,
+    ProductListGroup,
   },
 
   setup() {
-    const {
-      groupList,
-    } = toRefs(store.state)
+    const { groupList } = toRefs(store.state)
 
     return {
       groupList,
@@ -35,7 +33,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.products-title
+.product-list-title
   font-size 1.5rem
   margin-bottom 1rem
 

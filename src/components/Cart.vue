@@ -5,19 +5,19 @@ section.cart
   table.cart-table
     thead.cart-header
       tr.card-header-row
-        td.card-header-cell Наименование товара и описание
-        td.card-header-cell Количество
-        td.card-header-cell Цена
-        td.card-header-cell
+        td.card-table-header-cell Наименование товара и описание
+        td.card-table-header-cell Количество
+        td.card-table-header-cell Цена
+        td.card-table-header-cell
 
     tbody.cart-body
       tr.card-body-row(
         v-for="{ product, count } in cartProductMap"
         :key="product.id"
       )
-        td.card-body-cell.product-name {{ product.name }}
+        td.card-table-body-cell.product-name {{ product.name }}
 
-        td.card-body-cell.cart-product-count
+        td.card-table-body-cell.cart-product-count
           input.cart-product-count-input(
             :value="count"
             :min="1"
@@ -27,35 +27,35 @@ section.cart
           )
           span шт.
 
-        td.card-body-cell
+        td.card-table-body-cell
           span.product-price(
             v-watch:[onUpdatePrice]="product.price.RUB"
-          ) {{ currencyFormatter(product.price.RUB) }}
+          ) {{ formatCurrency(product.price.RUB) }}
           | /шт.
 
-        td.card-body-cell.product-delete
+        td.card-table-body-cell.product-delete
           button.product-delete-button(
             @click="deleteCartProduct(product)"
           ) Удалить
 
     tfoot.cart-footer
       tr.card-footer-row
-        td.card-footer-cell(
+        td.card-table-footer-cell(
           colspan="4"
         )
           | Общая стоимость:
           |
           span.cart-product-price-total(
-            v-watch:[onUpdatePrice]="priceRubTotal"
-          ) {{ currencyFormatter(priceRubTotal) }}
+            v-watch:[onUpdatePrice]="cartPrice.RUB"
+          ) {{ formatCurrency(cartPrice.RUB) }}
 </template>
 
 <script>
-import { computed, toRefs } from 'vue'
-import store from '@/store'
-import memoizeIntl from '@/lib/memoizeIntl'
-import setNumberDiffClass from '@/lib/setNumberDiffClass'
+import { toRefs } from 'vue'
 import watch from '@/directives/watch'
+import store from '@/store'
+import useCurrency from '@/hooks/useCurrency'
+import useWatchDiff from '@/hooks/useWatchDiff'
 
 export default {
   directives: {
@@ -65,21 +65,18 @@ export default {
   setup() {
     const { cartProductMap } = toRefs(store.state)
     const { deleteCartProduct, setCartProductCount } = toRefs(store.actions)
+    const { cartPrice } = toRefs(store.getters)
 
-    const priceRubTotal = computed(() => Object
-      .values(cartProductMap.value)
-      .reduce((acc, { product, count }) => product.price.RUB * count + acc, 0))
-
-    const currencyFormatter = memoizeIntl(Intl.NumberFormat)('ru', { style: 'currency', currency: 'RUB' })
-    const onUpdatePrice = setNumberDiffClass()
+    const formatCurrency = useCurrency()
+    const onUpdatePrice = useWatchDiff()
 
     return {
       cartProductMap,
-      priceRubTotal,
-      currencyFormatter,
-      onUpdatePrice,
+      cartPrice,
       deleteCartProduct,
       setCartProductCount,
+      formatCurrency,
+      onUpdatePrice,
     }
   },
 }
@@ -93,18 +90,18 @@ export default {
 .cart-table
   width 100%
 
-.card-header-cell
-  border-bottom 1px solid #888888
-  font-weight 600
-  padding .5rem 1rem
+  .card-table-header-cell
+    border-bottom 1px solid #888888
+    font-weight 600
+    padding .5rem 1rem
 
-.card-body-cell
-  border-bottom 1px solid #888888
-  padding 1rem
+  .card-table-body-cell
+    border-bottom 1px solid #888888
+    padding 1rem
 
-.card-footer-cell
-  padding .5rem 1rem
-  text-align right
+  .card-table-footer-cell
+    padding .5rem 1rem
+    text-align right
 
 .cart-product-count-input
   border 1px solid #cccccc

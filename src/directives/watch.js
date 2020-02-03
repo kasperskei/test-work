@@ -1,7 +1,7 @@
 /**
  * @callback Callback
- * @param {Any} curr - текущее значение аргумента
- * @param {Any} prev - предыдущее значение аргумента
+ * @param {Any} value - текущее значение аргумента
+ * @param {Any} oldValue - предыдущее значение аргумента
  * @param {Element} el - элемент, на котором сработала директива
  * @param {VNode} vnode
  * @param {VNode} oldVnode
@@ -26,7 +26,8 @@ export default {
   },
 
   beforeUpdate(el, binding, vnode, oldVnode) {
-    if (binding.value === binding.oldValue) return
-    binding.arg(binding.value, binding.oldValue, el, vnode, oldVnode)
+    if (binding.value !== binding.oldValue) {
+      binding.arg(binding.value, binding.oldValue, el, vnode, oldVnode)
+    }
   },
 }

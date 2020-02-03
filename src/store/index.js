@@ -1,4 +1,4 @@
-import { reactive, readonly } from 'vue'
+import { computed, reactive, readonly } from 'vue'
 import * as api from '@/api'
 
 const state = reactive({
@@ -7,6 +7,24 @@ const state = reactive({
   cartProductMap: {},
   rateUsdInRub: 0,
 })
+
+const getters = {
+  getProductListByGroupId: (groupId) => computed(() => state.productList
+    .filter((product) => product.groupId === groupId)),
+
+  cartPrice: computed(() => Object
+    .values(state.cartProductMap)
+    .reduce(
+      (acc, { product: { price }, count }) => Object
+        .entries(acc)
+        .map(([currency, total]) => [currency, price[currency] * count + total])
+        |> Object.fromEntries,
+      {
+        USD: 0,
+        RUB: 0,
+      },
+    )),
+}
 
 const actions = {
   async init() {
@@ -53,6 +71,7 @@ const actions = {
 
 const store = readonly({
   state,
+  getters,
   actions,
 })
 

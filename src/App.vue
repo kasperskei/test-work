@@ -1,19 +1,19 @@
 <template lang="pug">
 #app
   .section
-    Products
+    ProductList
 
   .section
     Cart
 </template>
 
 <script>
-import Products from '@/components/Products.vue'
+import ProductList from '@/components/ProductList.vue'
 import Cart from '@/components/Cart.vue'
 
 export default {
   components: {
-    Products,
+    ProductList,
     Cart,
   },
 }
